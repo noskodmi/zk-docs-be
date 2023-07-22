@@ -1,0 +1,30 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model PDF {
+  id                   Int       @id @default(autoincrement())
+  data                 String    // Base64 encoded PDF data
+  creatorSignature     Signature @relation("CreatorSignature", fields: [creatorSignatureId], references: [id])
+  creatorSignatureId   Int       @unique
+  counterpartySignature Signature @relation("CounterpartySignature", fields: [counterpartySignatureId], references: [id])
+  counterpartySignatureId Int    @unique
+}
+
+model Signature {
+  id   Int    @id @default(autoincrement())
+  data String // Base64 encoded signature data
+  creatorPDF  PDF? @relation("CreatorSignature")
+  counterpartyPDF  PDF? @relation("CounterpartySignature")
+}
+
+
+
